@@ -1,0 +1,40 @@
+{
+    "name": "bajaklautmalaka/pmi-admin",
+    "description": "A description for pmi-admin.",
+    "type": "package",
+    "keywords": [
+        "laravel"
+    ],
+    "authors": [
+        {
+            "name": "bajaklautmalaka@gmail.com",
+            "email": "bajaklautmalaka@gmail.com"
+        }
+    ],
+    "require": {
+        "illuminate/support": "~5.7.0|~5.8.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "BajakLautMalaka\\PmiAdmin\\": "./src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "BajakLautMalaka\\PmiAdmin\\Tests\\": "tests"
+        }
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "BajakLautMalaka\\PmiAdmin\\PmiAdminServiceProvider"
+            ]
+        }
+    },
+    "require-dev": {
+        "orchestra/testbench": "^3.8"
+    }
+}
