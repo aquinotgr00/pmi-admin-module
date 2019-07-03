@@ -8,6 +8,10 @@ return [
         ]
     ],
     'guards' => [
+        'admin-web' => [
+            'driver' => 'session',
+            'provider' => 'admins',
+        ],
         'admin' => [
             'driver' => 'passport',
             'provider' => 'admins',

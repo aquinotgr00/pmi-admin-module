@@ -2,6 +2,7 @@
 
 namespace BajakLautMalaka\PmiAdmin;
 
+use Laravel\Passport\HasApiTokens;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -11,7 +12,7 @@ use BajakLautMalaka\PmiAdmin\Role;
 
 class Admin extends Authenticatable
 {
-    use Notifiable;
+    use HasApiTokens, Notifiable;
     /**
      * @var array
      */
