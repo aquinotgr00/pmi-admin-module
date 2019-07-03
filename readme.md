@@ -1,5 +1,12 @@
 # pmi-admin
 
+This package provides API authentication service for both back end and mobile app users
+
+## Getting Started
+
+### Prerequisites
+
+
 
 ## Install
 To include the private Bitbucket repository via Composer you need to add this lines into your composer.json:
@@ -22,7 +29,7 @@ composer require bajaklautmalaka/pmi-admin
 
 
 ## Usage
-Write a few lines about the usage of this package.
+
 
 
 ## Testing
