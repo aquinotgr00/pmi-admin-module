@@ -54,7 +54,11 @@ class AuthController extends Controller
     
     public function logout(Request $request)
     {
-        dump($request->user()->token()->revoke());
-        return response()->success([]);
+        if($request->user()->token()->revoke()) {
+            return response()->success([]);
+        }
+        else {
+            return response()->fail([]);
+        }
     }
 }
