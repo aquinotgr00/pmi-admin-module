@@ -4,12 +4,12 @@
         Route::get('forgot_password','UserController@passwordReset');
     });
     
-    Route::middleware(['auth:admin','bindings'])->group(function() {
+    Route::middleware(['api','auth:admin'])->group(function() {
         Route::put('admin/password','UserController@passwordUpdate');
         Route::get('admin/logout', 'AuthController@logout');
         Route::put('admin/{user}/{status}','UserController@statusUpdate');
         
-        Route::apiResource('admin','UserController');
+        Route::apiResource('admins','UserController');
         
     });
     
