@@ -9,8 +9,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Validation\Rule;
 use BajakLautMalaka\PmiAdmin\Http\Requests\StoreUser;
-use BajakLautMalaka\PmiAdmin\Http\Requests\UpdateUser;
 
 class UserController extends Controller
 {
@@ -34,9 +34,8 @@ class UserController extends Controller
      *
      * @return \Illuminate\View\View
      */
-    public function show($id)
+    public function show(Admin $admin)
     {
-        $admin = Admin::find($id);
         return response()->success(compact('admin'));
     }
     
@@ -57,19 +56,27 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Modules\Admin\Http\Requests\UpdateUser  $request
-     * @param  \Modules\Admin\Admin  $user
-     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     * @param  \BajakLautMalaka\PmiAdmin\Admin  $admin
+     * @param  \Illuminate\Http\Request  $request
+     * @return array
      */
-    public function update(Request $request, Admin $user)
+    public function update(Admin $admin, Request $request)
     {
-        dump($user);
+        $request->validate([
+            'name'=>'required',
+            'email'=>[
+                'required',
+                'email',
+                Rule::unique('admins')->ignore($admin->id),
+            ],
+            'password'=>'sometimes|nullable|confirmed',
+        ]);
         //$this->authorize('update', $user);
-        $user->fill($request->except('password'));
+        $admin->fill($request->except('password'));
         if ($request->filled('password')) {
-            $user->password = $request->password;
+            $admin->password = $request->password;
         }
-        $user->save();
+        $admin->save();
         /*
         if (Gate::allows('edit-user-privileges', $user)) {
             if ($request->has('privilege')) {
@@ -78,7 +85,7 @@ class UserController extends Controller
             }
         }
         */
-        return response()->success(compact('user'));
+        return response()->success(compact('admin'));
     }
     
     /**
@@ -87,15 +94,20 @@ class UserController extends Controller
      * @param  \BajakLautMalaka\PmiAdmin\Admin  $user
      * @return array
      */
-    public function statusUpdate(Request $request, $id, $status)
+    public function statusUpdate(Admin $user, string $status)
     {
-        $user = Admin::find($id);
         $user->active = $status==='enable';
         $user->save();
         return response()->success($user);
     }
     public function passwordUpdate(Request $request) {
-        
+        $request->validate([
+            'password'=>'required|confirmed',
+        ]);
+        $admin = $request->user();
+        $admin->password = $request->password;
+        $admin->save();
+        return response()->success(compact('admin'));
     }
     
     public function passwordReset(Request $request) {
