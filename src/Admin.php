@@ -5,6 +5,7 @@ namespace BajakLautMalaka\PmiAdmin;
 use Laravel\Passport\HasApiTokens;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use BajakLautMalaka\PmiAdmin\AdminPrivilege;
@@ -24,6 +25,18 @@ class Admin extends Authenticatable
     protected $hidden = [
         'password', 'remember_token',
     ];
+    
+    /**
+     * Global Scope - sort by latest
+     */
+    protected static function boot()
+    {
+        parent::boot();
+        
+        static::addGlobalScope('order', function (Builder $builder) {
+            $builder->latest();
+        });
+    }
     
     public function setPasswordAttribute(string $pass): void
     {
