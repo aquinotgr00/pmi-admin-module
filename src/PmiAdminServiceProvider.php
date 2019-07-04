@@ -99,7 +99,7 @@ class PmiAdminServiceProvider extends ServiceProvider
     
     private function loadRoutes(RouteRegistrar $routeRegistrar): void
     {
-        $routeRegistrar->prefix('api/'.config('admin.prefix', 'admin'))
+        $routeRegistrar->prefix('api')
                 ->namespace('BajakLautMalaka\PmiAdmin\Http\Controllers')
                 ->group(function () {
                     $this->loadRoutesFrom(__DIR__.'/../routes/api.php');
