@@ -5,12 +5,16 @@ namespace BajakLautMalaka\PmiAdmin\Http\Controllers;
 use BajakLautMalaka\PmiAdmin\Admin;
 use BajakLautMalaka\PmiAdmin\Privilege;
 use BajakLautMalaka\PmiAdmin\Role;
+use BajakLautMalaka\PmiAdmin\Http\Requests\StoreUser;
+use BajakLautMalaka\PmiAdmin\Http\Requests\UpdateUser;
+use BajakLautMalaka\PmiAdmin\Mail\ResetPasswordRequest;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
-use BajakLautMalaka\PmiAdmin\Http\Requests\StoreUser;
+
 
 class UserController extends Controller
 {
@@ -34,9 +38,9 @@ class UserController extends Controller
      *
      * @return \Illuminate\View\View
      */
-    public function show(Admin $admin)
+    public function show(Admin $user)
     {
-        return response()->success(compact('admin'));
+        return response()->success(compact('user'));
     }
     
     /**
@@ -60,23 +64,15 @@ class UserController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return array
      */
-    public function update(Admin $admin, Request $request)
+    public function update(UpdateUser $request, Admin $user)
     {
-        $request->validate([
-            'name'=>'required',
-            'email'=>[
-                'required',
-                'email',
-                Rule::unique('admins')->ignore($admin->id),
-            ],
-            'password'=>'sometimes|nullable|confirmed',
-        ]);
+        
         //$this->authorize('update', $user);
-        $admin->fill($request->except('password'));
+        $user->fill($request->except('password'));
         if ($request->filled('password')) {
-            $admin->password = $request->password;
+            $user->password = $request->password;
         }
-        $admin->save();
+        $user->save();
         /*
         if (Gate::allows('edit-user-privileges', $user)) {
             if ($request->has('privilege')) {
@@ -85,7 +81,7 @@ class UserController extends Controller
             }
         }
         */
-        return response()->success(compact('admin'));
+        return response()->success(compact('user'));
     }
     
     /**
@@ -101,16 +97,26 @@ class UserController extends Controller
         return response()->success($user);
     }
     public function passwordUpdate(Request $request) {
-        $request->validate([
-            'password'=>'required|confirmed',
-        ]);
+        $request->validate(['password'=>'required|confirmed']);
         $admin = $request->user();
         $admin->password = $request->password;
         $admin->save();
         return response()->success(compact('admin'));
     }
     
-    public function passwordReset(Request $request) {
-        
+    public function requestPasswordReset(Request $request) {
+        $request->validate(['email'=>['required','email']]);
+        $admin = Admin::where('email',$request->email)->first();
+        if($admin) {
+            $resetToken = Str::uuid();
+            DB::table('password_resets')->insert([
+                'email'=>$admin->email,
+                'token'=>$resetToken,
+                'created_at'=> \Carbon\Carbon::now()
+            ]);
+            Mail::to($request->email)->send(new ResetPasswordRequest($resetToken));
+            return response()->success(['email'=>$request->email]);
+        }
+        return response()->fail(['email'=>$request->email]);
     }
 }

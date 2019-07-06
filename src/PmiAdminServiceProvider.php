@@ -31,6 +31,7 @@ class PmiAdminServiceProvider extends ServiceProvider
         $this->loadMigrations();
         $this->loadResponseMacros();
         $this->loadRoutes($routeRegistrar);
+        $this->loadViews();
         $this->mergeAuthConfig();
     }
     
@@ -61,6 +62,18 @@ class PmiAdminServiceProvider extends ServiceProvider
             $this->makeResponseJsendSuccess();
             $this->makeResponseJsendFail();
             $this->makeResponseJsendError();
+        }
+    }
+    
+    private function loadViews(): void
+    {
+        $path = __DIR__.'/../resources/views';
+        $this->loadViewsFrom($path, 'admin');
+
+        if ($this->app->runningInConsole()) {
+            $this->publishes([
+                $path => resource_path('views/vendor/admin'),
+            ], 'admin:views');
         }
     }
     
@@ -99,10 +112,18 @@ class PmiAdminServiceProvider extends ServiceProvider
     
     private function loadRoutes(RouteRegistrar $routeRegistrar): void
     {
-        $routeRegistrar->prefix('api')
+        $routeRegistrar->prefix('api/'.config('admin.prefix', 'admin'))
                 ->namespace('BajakLautMalaka\PmiAdmin\Http\Controllers')
+                ->middleware(['api'])
                 ->group(function () {
                     $this->loadRoutesFrom(__DIR__.'/../routes/api.php');
+                });
+                
+        $routeRegistrar->prefix(config('admin.prefix', 'admin'))
+                ->namespace('BajakLautMalaka\PmiAdmin\Http\Controllers')
+                ->middleware(['web'])
+                ->group(function () {
+                    $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
                 });
     }
     

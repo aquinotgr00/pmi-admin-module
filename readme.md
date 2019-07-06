@@ -5,15 +5,19 @@ This package provides API authentication service for both back end and mobile ap
 ## Getting Started
 
 ### Prerequisites
-* Laravel
+* [Laravel](https://laravel.com/docs)
 ```sh
 composer create-project --prefer-dist laravel/laravel pmijkt
 ```
-* Laravel Passport
+* [Laravel Passport](https://laravel.com/docs/5.5/passport)
 ```sh
 composer require laravel/passport
 php artisan migrate
 php artisan passport:install
+```
+* [Guzzle HTTP Library](http://docs.guzzlephp.org/en/stable)
+```sh
+composer require guzzlehttp/guzzle
 ```
 
 
@@ -42,13 +46,14 @@ php artisan migrate
 ```
 
 ## Usage
-### admin authentication
-get auth token : using API testing tools (Postman, for example), make a POST request to /api/admin/login with `request headers` as follows:
+### Admin Authentication
+#### Login
+using API testing tools ([Postman](https://www.getpostman.com), for example), make a `POST` request to `/api/admin/login` with `request headers` as follows:
 ```sh
 Accept:application/json
 Content-type:application/json
 ```
-and request body below :
+Given a request body below :
 ```json
 
 	{
@@ -56,9 +61,59 @@ and request body below :
 		"password": "Open1234"
 	}
 ```
-response should be 
-logout
+then the valid response you're getting should be :
+```json
 
+	{
+		"status": "success",
+		"data": {
+			"token": "<<auth token here>>"
+		}
+	}
+```
+
+#### Logout
+
+### Response macros
+#### [JSend](https://github.com/omniti-labs/jsend)
+* Response type : **Success**
+```php
+
+	return response()->success(['category'=>'Blog']);
+```
+will render response:
+```json
+
+	{
+		"status": "success",
+		"data": {
+			"category": "Blog"
+		}
+	}
+```
+* Response type : **Fail**
+```php
+
+	return response()->fail([
+		"errors"=>[
+			['name'=>'field name is required'],
+			['email'=>'invalid email format']
+		]
+	]);
+```
+will render response:
+```json
+
+	{
+		"status": "fail",
+		"data": {
+			"errors":[
+				{"name": "field name is required"},
+				{"email": "invalid email format"}
+			]
+		}
+	}
+```
 
 ## Testing
 Run the tests with:
