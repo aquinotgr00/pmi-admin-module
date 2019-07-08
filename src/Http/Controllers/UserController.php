@@ -7,14 +7,11 @@ use BajakLautMalaka\PmiAdmin\Privilege;
 use BajakLautMalaka\PmiAdmin\Role;
 use BajakLautMalaka\PmiAdmin\Http\Requests\StoreUser;
 use BajakLautMalaka\PmiAdmin\Http\Requests\UpdateUser;
-use BajakLautMalaka\PmiAdmin\Mail\ResetPasswordRequest;
+use BajakLautMalaka\PmiAdmin\Jobs\SendResetPasswordEmailToAdmin;
+use BajakLautMalaka\PmiAdmin\Jobs\SendWelcomeEmailToAdmin;
+
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Str;
-use Illuminate\Validation\Rule;
-
 
 class UserController extends Controller
 {
@@ -53,6 +50,7 @@ class UserController extends Controller
     {
         //$this->authorize('create', Auth::user());
         $user = Admin::create($request->only(['name', 'email', 'password', 'role_id']));
+        SendWelcomeEmailToAdmin::dispatch((object) $request->only(['name', 'email', 'password']));
         //$user->privileges()->createMany($request->privilege);
         return response()->success(compact('user'));
     }
@@ -96,6 +94,7 @@ class UserController extends Controller
         $user->save();
         return response()->success($user);
     }
+    
     public function passwordUpdate(Request $request) {
         $request->validate(['password'=>'required|confirmed']);
         $admin = $request->user();
@@ -108,13 +107,7 @@ class UserController extends Controller
         $request->validate(['email'=>['required','email']]);
         $admin = Admin::where('email',$request->email)->first();
         if($admin) {
-            $resetToken = Str::uuid();
-            DB::table('password_resets')->insert([
-                'email'=>$admin->email,
-                'token'=>$resetToken,
-                'created_at'=> \Carbon\Carbon::now()
-            ]);
-            Mail::to($request->email)->send(new ResetPasswordRequest($resetToken));
+            SendResetPasswordEmailToAdmin::dispatch($request->email);
             return response()->success(['email'=>$request->email]);
         }
         return response()->fail(['email'=>$request->email]);

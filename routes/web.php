@@ -17,8 +17,11 @@
         return $token;
     });
     
-    
-    
-    Route::get('email/preview', function() {
-        return new BajakLautMalaka\PmiAdmin\Mail\ResetPasswordRequest(Str::uuid());
+    Route::get('email/preview/{mailable}', function($mailable) {
+        switch ($mailable) {
+            case 'welcome':
+                return new BajakLautMalaka\PmiAdmin\Mail\WelcomeAdmin((object) ['name'=>'Morgan Freeman', 'password'=>'secret']);
+            case 'reset-password-request':
+                return new BajakLautMalaka\PmiAdmin\Mail\ResetPasswordRequest(Str::uuid());
+        }
     });
