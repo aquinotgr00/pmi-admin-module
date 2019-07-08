@@ -114,7 +114,7 @@ class PmiAdminServiceProvider extends ServiceProvider
     {
         $routeRegistrar->prefix('api')
                 ->namespace('BajakLautMalaka\PmiAdmin\Http\Controllers')
-                ->middleware(['api'])
+                ->middleware('api')
                 ->group(function () {
                     $this->loadRoutesFrom(__DIR__.'/../routes/api.php');
                 });

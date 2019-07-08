@@ -9,7 +9,7 @@ This package provides API authentication service for both back end and mobile ap
 ```sh
 composer create-project --prefer-dist laravel/laravel pmijkt
 ```
-* [Laravel Passport](https://laravel.com/docs/5.5/passport)
+* [Laravel Passport](https://laravel.com/docs/5.8/passport)
 ```sh
 composer require laravel/passport
 php artisan migrate
@@ -19,7 +19,12 @@ php artisan passport:install
 ```sh
 composer require guzzlehttp/guzzle
 ```
-
+* [Queues](https://laravel.com/docs/5.8/queues#introduction)
+```sh
+php artisan queue:table
+php artisan migrate
+php artisan queue:work
+```
 
 ## Install
 To include the private Bitbucket repository via Composer you need to add this lines into your composer.json:
