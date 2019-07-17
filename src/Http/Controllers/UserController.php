@@ -10,7 +10,7 @@ use BajakLautMalaka\PmiAdmin\Http\Requests\UpdateUser;
 use BajakLautMalaka\PmiAdmin\Jobs\SendResetPasswordEmailToAdmin;
 use BajakLautMalaka\PmiAdmin\Jobs\SendWelcomeEmailToAdmin;
 
-use App\Http\Controllers\Controller;
+use Illuminate\Routing\Controller;
 use Illuminate\Http\Request;
 
 class UserController extends Controller

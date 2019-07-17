@@ -5,7 +5,7 @@ namespace BajakLautMalaka\PmiAdmin\Http\Controllers;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Controllers\Controller;
+use Illuminate\Routing\Controller;
 
 class AuthController extends Controller
 {
