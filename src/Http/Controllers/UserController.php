@@ -21,13 +21,23 @@ class UserController extends Controller
      *
      * @return array
      */
-    public function index()
+    public function index(Request $request,Admin $admin)
     {
-        //$this->authorize('index', Auth::user());
         
-        $admins  = Admin::where('email', '<>', 'admin@mail.com')->paginate(15);
+        $admin     = $this->handleSearch($request, $admin);
+        $admin     = $admin->where('email', '<>', 'admin@mail.com');
+        $admins    = $admin->paginate(15);
         
         return response()->success(compact('admins'));
+    }
+
+    public function handleSearch(Request $request, Admin $admin)
+    {
+        if ($request->has('s')) {
+            $admin = $admin->where('name', 'like', '%' . $request->s . '%')
+            ->orWhere('email', 'like', '%' . $request->s . '%');
+        }
+        return $admin;
     }
 
     /**
@@ -70,6 +80,7 @@ class UserController extends Controller
         if ($request->filled('password')) {
             $user->password = $request->password;
         }
+        
         $user->save();
         /*
         if (Gate::allows('edit-user-privileges', $user)) {
