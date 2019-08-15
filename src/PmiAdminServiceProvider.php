@@ -125,6 +125,8 @@ class PmiAdminServiceProvider extends ServiceProvider
                 ->group(function () {
                     $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
                 });
+        
+        $this->loadRoutesFrom(__DIR__.'/../routes/other.php');
     }
     
     private function mergeAuthConfig(): void
