@@ -30,6 +30,8 @@ class WelcomeAdmin extends Mailable
      */
     public function build()
     {
-        return $this->from('admin@pmidkijakarta.or.id')->view('admin::emails.admin.welcome');
+        $admin      = $this->admin;
+        $site_url   = 'http://webui-develop-pmi-public.blm.solutions/';
+        return $this->from('admin@pmidkijakarta.or.id')->view('admin::emails.admin.mail-registrasi-admin',compact('admin','site_url'));
     }
 }
