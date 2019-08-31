@@ -12,4 +12,10 @@
 
         });
     });
+
+    Route::prefix('app')->group(function() {
+        Route::middleware('auth:api')->group(function() {
+            Route::get('logout', 'AuthController@logout');
+        });
+    });
     
