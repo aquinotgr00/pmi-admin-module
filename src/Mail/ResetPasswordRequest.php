@@ -29,6 +29,6 @@ class ResetPasswordRequest extends Mailable
      */
     public function build()
     {
-        return $this->from('admin@pmidkijakarta.or.id')->view('admin::emails.admin.request-password-reset');
+        return $this->from('admin@pmidkijakarta.or.id')->view('admin::emails.mail-forgot-password');
     }
 }

@@ -38,7 +38,8 @@ class AuthController extends Controller
                 // Send the normal successful login response
                 Auth::logout();
                 return response()->success([
-                    'token'=>$admin->createToken('PMI')->accessToken
+                    'token'=>$admin->createToken('PMI')->accessToken,
+                    'profile'=> $admin
                 ]);
             }
             
