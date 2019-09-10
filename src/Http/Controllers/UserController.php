@@ -31,11 +31,13 @@ class UserController extends Controller
         return response()->success(compact('admins'));
     }
 
-    public function handleSearch(Request $request, Admin $admin)
+    private function handleSearch(Request $request, Admin $admin)
     {
         if ($request->has('s')) {
-            $admin = $admin->where('name', 'like', '%' . $request->s . '%')
-            ->orWhere('email', 'like', '%' . $request->s . '%');
+            $admin = $admin->where(function ($query) use ($request) {
+                $query->where('name', 'like', '%' . $request->s . '%')
+                ->orWhere('email', 'like', '%' . $request->s . '%');
+            });
         }
         return $admin;
     }
