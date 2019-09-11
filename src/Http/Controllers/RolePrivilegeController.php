@@ -11,39 +11,39 @@ use Illuminate\Http\Request;
 class RolePrivilegeController extends Controller{
 
 	
-	public function index(Request $request,RolePrivilege $privileges)
+	public function index(Request $request,RolePrivilege $rolesprivileges)
 	{
 		
-		$privileges = $privileges->all();
-		return response()->success($privileges);
+		$rolesprivileges = $rolesprivileges->all();
+		return response()->success($rolesprivileges);
 	}
 
-	public function show(RolePrivilege $privileges)
+	public function show(RolePrivilege $rolesprivilege)
 	{
-		return response()->success($privileges);
+		return response()->success($rolesprivilege);
 	}
 
 	public function store(StoreRolePrivilege $request)
 	{
-		$privileges = RolePrivilege::create($request->all());
-		return response()->success($privileges);
+		$rolesprivilege = RolePrivilege::create($request->all());
+		return response()->success($rolesprivilege);
 	}
 
-	public function update(UpdateRolePrivilege $request, RolePrivilege $privileges)
+	public function update(UpdateRolePrivilege $request, RolePrivilege $rolesprivilege)
 	{
-		$privileges->update($request->all());
-		return response()->success($privileges);
+		$rolesprivilege->update($request->all());
+		return response()->success($rolesprivilege);
 	}
 
-	public function destroy(RolePrivilege $privileges)
+	public function destroy(RolePrivilege $rolesprivilege)
 	{
 		try{
-			$privileges->delete();
-			return response()->success($privileges);
+			$rolesprivilege->delete();
+			return response()->success($rolesprivilege);
 		} catch ( \Illuminate\Database\QueryException $e) {
 			$collection = collect(['message' => 'Error! Role privilage memiliki items']);
-            $privileges       = $collection->merge($privileges);
-            return response()->fail($privileges);
+            $rolesprivilege      = $collection->merge($rolesprivilege);
+            return response()->fail($rolesprivilege);
 		}
 	}
 }

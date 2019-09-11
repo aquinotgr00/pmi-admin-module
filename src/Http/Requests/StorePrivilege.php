@@ -25,7 +25,7 @@ class StorePrivilege extends FormRequest
     {
         return [
             'name'=>'required|unique:privileges',
-            'privilege_category_id'=>'required|exists:privilege_categories',
+            'privilege_category_id'=>'exists:privilege_categories,id',
         ];
     }
     

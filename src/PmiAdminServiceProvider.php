@@ -73,7 +73,7 @@ class PmiAdminServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
             $this->publishes([
                 $path => resource_path('views/vendor/admin'),
-            ], 'admin:views');
+                ], 'admin:views');
         }
     }
     
@@ -82,7 +82,7 @@ class PmiAdminServiceProvider extends ServiceProvider
             return Response::make([
                 'status'=>'success',
                 'data'=>$data
-            ]);
+                ]);
         });
     }
     
@@ -91,15 +91,15 @@ class PmiAdminServiceProvider extends ServiceProvider
             return Response::make([
                 'status'=>'fail',
                 'data'=>$data
-            ]);
+                ]);
         });
     }
     
     private function makeResponseJsendError() {
         Response::macro('error', function ($message, $data=[]) {
             $response = [
-                'status'=>'error',
-                'message'=>$message
+            'status'=>'error',
+            'message'=>$message
             ];
 
             if($data) {
@@ -113,18 +113,18 @@ class PmiAdminServiceProvider extends ServiceProvider
     private function loadRoutes(RouteRegistrar $routeRegistrar): void
     {
         $routeRegistrar->prefix('api')
-                ->namespace('BajakLautMalaka\PmiAdmin\Http\Controllers')
-                ->middleware('api')
-                ->group(function () {
-                    $this->loadRoutesFrom(__DIR__.'/../routes/api.php');
-                });
-                
+        ->namespace('BajakLautMalaka\PmiAdmin\Http\Controllers')
+        ->middleware('api')
+        ->group(function () {
+            $this->loadRoutesFrom(__DIR__.'/../routes/api.php');
+        });
+
         $routeRegistrar->prefix(config('admin.prefix', 'admin'))
-                ->namespace('BajakLautMalaka\PmiAdmin\Http\Controllers')
-                ->middleware(['web'])
-                ->group(function () {
-                    $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
-                });
+        ->namespace('BajakLautMalaka\PmiAdmin\Http\Controllers')
+        ->middleware(['web'])
+        ->group(function () {
+            $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
+        });
         
         $this->loadRoutesFrom(__DIR__.'/../routes/other.php');
     }

@@ -24,8 +24,8 @@ class StoreRolePrivilege extends FormRequest
     public function rules()
     {
         return [
-            'role_id'=>'required|exists:roles',
-            'privilege_id'=>'required|exists:privileges',
+            'role_id'=>'required|exists:roles,id',
+            'privilege_id'=>'required|exists:privileges,id',
         ];
     }
     

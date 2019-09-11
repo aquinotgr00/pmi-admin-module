@@ -12,52 +12,53 @@ class RolesController extends Controller{
 	public function index(Request $request,Role $roles)
 	{
 		$roles = $this->handleSeachName($request,$roles);  
-		$roles = $roles->get();
+		$roles = $roles->with('privileges')->get();
 		return response()->success($roles);
 	}
 
 	private function handleSeachName(Request $request,$roles)
 	{
 		if ($request->has('s')) {
-			$roles = $roles->where('name','like','%'.$request->s.'%');
+			$roles = $role->where('name','like','%'.$request->s.'%');
 		}
 		return $roles;
 	}
 
-	public function show(Role $roles)
+	public function show(Role $role)
 	{
-		return response()->success($roles);
+		return response()->success($role);
 	}
 
-	public function store(Request $request)
+	public function store(Request $request,Role $role)
 	{
 		$request->validate([
 			'name' => 'required|unique:roles'
 		]);
-
-		$roles = Role::create($request->all());
-		return response()->success($roles);
+		$role->name = $request->name;
+		$role->save();
+		return response()->success($role);
 	}
 
-	public function update(Request $request, Role $roles)
+	public function update(Request $request, Role $role)
 	{
 		$request->validate([
-			'name' => 'unique:roles,name,'.$roles->id
+			'name' => 'unique:roles,name,'.$role->id
 		]);
+		$role->name = $request->name;
+		$role->save();
 
-		$roles->update($request->all());
-		return response()->success($roles);
+		return response()->success($role);
 	}
 
-	public function destroy(Role $roles)
+	public function destroy(Role $role)
 	{
 		try{
-			$roles->delete();
-			return response()->success($roles);
+			$role->delete();
+			return response()->success($role);
 		} catch ( \Illuminate\Database\QueryException $e) {
 			$collection = collect(['message' => 'Error! Role memiliki items']);
-            $roles       = $collection->merge($roles);
-            return response()->fail($roles);
+            $role       = $collection->merge($role);
+            return response()->fail($role);
 		}
 	}
 }

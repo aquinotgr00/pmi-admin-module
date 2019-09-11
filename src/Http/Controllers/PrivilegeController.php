@@ -14,7 +14,7 @@ class PrivilegeController extends Controller{
 	public function index(Request $request,Privilege $privileges)
 	{
 		$privileges = $this->handleSeachName($request,$privileges);  
-		$privileges = $privileges->get();
+		$privileges = $privileges->with('privilegeCategory')->get();
 		return response()->success($privileges);
 	}
 
@@ -26,9 +26,12 @@ class PrivilegeController extends Controller{
 		return $privileges;
 	}
 
-	public function show(Privilege $privileges)
+	public function show(Privilege $privilege)
 	{
-		return response()->success($privileges);
+		if (isset($privilege->privilegeCategory)) {
+			$privilege->privilegeCategory;
+		}
+		return response()->success($privilege);
 	}
 
 	public function store(StorePrivilege $request)
@@ -37,21 +40,21 @@ class PrivilegeController extends Controller{
 		return response()->success($privileges);
 	}
 
-	public function update(UpdatePrivilege $request, Privilege $privileges)
+	public function update(UpdatePrivilege $request, Privilege $privilege)
 	{
-		$privileges->update($request->all());
-		return response()->success($privileges);
+		$privilege->update($request->all());
+		return response()->success($privilege);
 	}
 
-	public function destroy(Privilege $privileges)
+	public function destroy(Privilege $privilege)
 	{
 		try{
-			$privileges->delete();
-			return response()->success($privileges);
+			$privilege->delete();
+			return response()->success($privilege);
 		} catch ( \Illuminate\Database\QueryException $e) {
 			$collection = collect(['message' => 'Error! Privilage memiliki items']);
-            $privileges       = $collection->merge($privileges);
-            return response()->fail($privileges);
+            $privilege       = $collection->merge($privilege);
+            return response()->fail($privilege);
 		}
 	}
 }

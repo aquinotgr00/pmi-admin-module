@@ -24,8 +24,8 @@ class UpdateRolePrivilege extends FormRequest
     public function rules()
     {
         return [
-            'role_id'=>'exists:roles',
-            'privilege_id'=>'exists:privileges',
+            'role_id'=>'exists:roles,id',
+            'privilege_id'=>'exists:privileges,id',
         ];
     }
     

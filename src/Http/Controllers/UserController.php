@@ -26,6 +26,7 @@ class UserController extends Controller
         
         $admin     = $this->handleSearch($request, $admin);
         $admin     = $admin->where('email', '<>', 'admin@mail.com');
+        $admin     = $admin->with('role');
         $admins    = $admin->paginate(15);
         
         return response()->success(compact('admins'));
@@ -59,12 +60,28 @@ class UserController extends Controller
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
     public function store(StoreUser $request)
-    {
-        //$this->authorize('create', Auth::user());
+    {   
         $user = Admin::create($request->only(['name', 'email', 'password', 'role_id']));
+        $user = $this->handleStorePrivileges($request,$user);
+
         SendWelcomeEmailToAdmin::dispatch((object) $request->only(['name', 'email', 'password']));
-        //$user->privileges()->createMany($request->privilege);
+        
         return response()->success(compact('user'));
+    }
+
+    private function handleStorePrivileges(Request $request, $user)
+    {
+        if ($request->has('privileges')) {
+            $items = [];
+            foreach ($request->privileges as $key => $value) {
+                $items[] = [
+                    'privilege_id' => $value
+                ];
+            }
+            $user->privileges()->createMany($items);
+            $user->privileges;            
+        }
+        return $user;
     }
 
     /**

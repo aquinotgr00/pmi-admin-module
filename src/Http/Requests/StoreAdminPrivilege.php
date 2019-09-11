@@ -24,8 +24,8 @@ class StoreAdminPrivilege extends FormRequest
     public function rules()
     {
         return [
-            'admin_id'=>'required|exists:admins',
-            'privilege_id'=>'required|exists:privileges',
+            'admin_id'=>'required|exists:admins,id',
+            'privilege_id'=>'required|exists:privileges,id',
         ];
     }
     

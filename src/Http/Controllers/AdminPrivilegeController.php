@@ -11,38 +11,42 @@ use Illuminate\Http\Request;
 class AdminPrivilegeController extends Controller{
 
 	
-	public function index(Request $request,AdminPrivilege $privileges)
+	public function index(Request $request,AdminPrivilege $adminprivileges)
 	{
-		$privileges = $privileges->all();
-		return response()->success($privileges);
+		$adminprivileges = $adminprivileges->all();
+		return response()->success($adminprivileges);
 	}
 
-	public function show(AdminPrivilege $privileges)
+	public function show(AdminPrivilege $adminprivilege)
 	{
-		return response()->success($privileges);
+		return response()->success($adminprivilege);
 	}
 
-	public function store(StoreAdminPrivilege $request)
+	public function store(StoreAdminPrivilege $request, AdminPrivilege $adminprivilege)
 	{
-		$privileges = AdminPrivilege::create($request->all());
-		return response()->success($privileges);
+		$adminprivilege->admin_id 		= $request->admin_id;
+		$adminprivilege->privilege_id 	= $request->privilege_id;
+		$adminprivilege->save();
+		return response()->success($adminprivilege);
 	}
 
-	public function update(UpdateAdminPrivilege $request, AdminPrivilege $privileges)
+	public function update(UpdateAdminPrivilege $request, AdminPrivilege $adminprivilege)
 	{
-		$privileges->update($request->all());
-		return response()->success($privileges);
+		$adminprivilege->admin_id 		= $request->admin_id;
+		$adminprivilege->privilege_id 	= $request->privilege_id;
+		$adminprivilege->save();
+		return response()->success($adminprivilege);
 	}
 
-	public function destroy(AdminPrivilege $privileges)
+	public function destroy(AdminPrivilege $adminprivilege)
 	{
 		try{
-			$privileges->delete();
-			return response()->success($privileges);
+			$adminprivilege->delete();
+			return response()->success($adminprivilege);
 		} catch ( \Illuminate\Database\QueryException $e) {
 			$collection = collect(['message' => 'Error! CategoryPrivilage memiliki items']);
-            $privileges       = $collection->merge($privileges);
-            return response()->fail($privileges);
+            $adminprivilege       = $collection->merge($adminprivilege);
+            return response()->fail($adminprivilege);
 		}
 	}
 }

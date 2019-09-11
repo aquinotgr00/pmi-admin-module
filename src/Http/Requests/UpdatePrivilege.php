@@ -24,8 +24,8 @@ class UpdatePrivilege extends FormRequest
     public function rules()
     {
         return [
-            'name'=>'unique:privileges,name,'.$this->privileges->id,
-            'privilege_category_id'=>'exists:privilege_categories',
+            'name'=>'unique:privileges,name,'.$this->privilege->id,
+            'privilege_category_id'=>'exists:privilege_categories,id',
         ];
     }
     

@@ -14,8 +14,8 @@
                 Route::apiResource('categories','PrivilegeCategoryController');
                 Route::apiResource('privileges','PrivilegeController');
                 Route::apiResource('roles','RolesController');
-                Route::apiResource('roles/privileges','RolePrivilegeController');
-                Route::apiResource('admin/privileges','AdminPrivilegeController');
+                Route::apiResource('rolesprivileges','RolePrivilegeController');
+                Route::apiResource('adminprivileges','AdminPrivilegeController');
             });
             
         });

@@ -24,8 +24,8 @@ class UpdateAdminPrivilege extends FormRequest
     public function rules()
     {
         return [
-            'admin_id'=>'exists:admins',
-            'privilege_id'=>'exists:privileges',
+            'admin_id'=>'exists:admins,id',
+            'privilege_id'=>'exists:privileges,id',
         ];
     }
     

@@ -12,7 +12,7 @@ class PrivilegeCategoryController extends Controller{
 	public function index(Request $request,PrivilegeCategory $categories)
 	{
 		$categories = $this->handleSeachName($request,$categories);  
-		$categories = $categories->get();
+		$categories = $categories->with('privileges')->get();
 		return response()->success($categories);
 	}
 
@@ -24,9 +24,9 @@ class PrivilegeCategoryController extends Controller{
 		return $categories;
 	}
 
-	public function show(PrivilegeCategory $categories)
+	public function show(PrivilegeCategory $category)
 	{
-		return response()->success($categories);
+		return response()->success($category);
 	}
 
 	public function store(Request $request)
@@ -39,25 +39,25 @@ class PrivilegeCategoryController extends Controller{
 		return response()->success($categories);
 	}
 
-	public function update(Request $request, PrivilegeCategory $categories)
+	public function update(Request $request, PrivilegeCategory $category)
 	{
 		$request->validate([
-			'name' => 'unique:privilege_categories,name,'.$categories->id
+			'name' => 'unique:privilege_categories,name,'.$category->id
 		]);
 
-		$categories->update($request->all());
-		return response()->success($categories);
+		$category->update($request->all());
+		return response()->success($category);
 	}
 
-	public function destroy(PrivilegeCategory $categories)
+	public function destroy(PrivilegeCategory $category)
 	{
 		try{
-			$categories->delete();
-			return response()->success($categories);
+			$category->delete();
+			return response()->success($category);
 		} catch ( \Illuminate\Database\QueryException $e) {
 			$collection = collect(['message' => 'Error! CategoryPrivilage memiliki items']);
-            $categories       = $collection->merge($categories);
-            return response()->fail($categories);
+            $category       = $collection->merge($category);
+            return response()->fail($category);
 		}
 	}
 }
