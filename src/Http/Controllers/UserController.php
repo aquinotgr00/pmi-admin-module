@@ -23,19 +23,22 @@ class UserController extends Controller
      */
     public function index(Request $request,Admin $admin)
     {
-        
+
         $admin     = $this->handleSearch($request, $admin);
         $admin     = $admin->where('email', '<>', 'admin@mail.com');
+        $admin     = $admin->with('role');
         $admins    = $admin->paginate(15);
         
         return response()->success(compact('admins'));
     }
 
-    public function handleSearch(Request $request, Admin $admin)
+    private function handleSearch(Request $request, Admin $admin)
     {
         if ($request->has('s')) {
-            $admin = $admin->where('name', 'like', '%' . $request->s . '%')
-            ->orWhere('email', 'like', '%' . $request->s . '%');
+            $admin = $admin->where(function ($query) use ($request) {
+                $query->where('name', 'like', '%' . $request->s . '%')
+                ->orWhere('email', 'like', '%' . $request->s . '%');
+            });
         }
         return $admin;
     }
@@ -57,12 +60,30 @@ class UserController extends Controller
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
     public function store(StoreUser $request)
-    {
-        //$this->authorize('create', Auth::user());
+    {   
         $user = Admin::create($request->only(['name', 'email', 'password', 'role_id']));
+        $user = $this->handleStorePrivileges($request,$user);
+
         SendWelcomeEmailToAdmin::dispatch((object) $request->only(['name', 'email', 'password']));
-        //$user->privileges()->createMany($request->privilege);
+        
         return response()->success(compact('user'));
+    }
+
+    private function handleStorePrivileges(Request $request, $user)
+    {
+        if ($request->has('privileges')) {
+            
+            $privileges =  collect($request->privileges);
+            $privileges = $privileges->filter(function ($value) {
+                return !is_null($value);
+            });
+
+            $privileges = $privileges->toArray();
+            
+            $user->privileges()->createMany($privileges);
+            $user->privileges;            
+        }
+        return $user;
     }
 
     /**
@@ -74,7 +95,7 @@ class UserController extends Controller
      */
     public function update(UpdateUser $request, Admin $user)
     {
-        
+
         //$this->authorize('update', $user);
         $user->fill($request->except('password'));
         if ($request->filled('password')) {

@@ -10,6 +10,14 @@
 
             Route::apiResource('users','UserController');
 
+            Route::prefix('grant')->group(function() {
+                Route::apiResource('categories','PrivilegeCategoryController');
+                Route::apiResource('privileges','PrivilegeController');
+                Route::apiResource('roles','RolesController');
+                Route::apiResource('rolesprivileges','RolePrivilegeController');
+                Route::apiResource('adminprivileges','AdminPrivilegeController');
+            });
+            
         });
     });
 
