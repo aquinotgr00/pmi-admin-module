@@ -23,7 +23,7 @@ class UserController extends Controller
      */
     public function index(Request $request,Admin $admin)
     {
-        
+
         $admin     = $this->handleSearch($request, $admin);
         $admin     = $admin->where('email', '<>', 'admin@mail.com');
         $admin     = $admin->with('role');
@@ -72,13 +72,15 @@ class UserController extends Controller
     private function handleStorePrivileges(Request $request, $user)
     {
         if ($request->has('privileges')) {
-            $items = [];
-            foreach ($request->privileges as $key => $value) {
-                $items[] = [
-                    'privilege_id' => $value
-                ];
-            }
-            $user->privileges()->createMany($items);
+            
+            $privileges =  collect($request->privileges);
+            $privileges = $privileges->filter(function ($value) {
+                return !is_null($value);
+            });
+
+            $privileges = $privileges->toArray();
+            
+            $user->privileges()->createMany($privileges);
             $user->privileges;            
         }
         return $user;
@@ -93,7 +95,7 @@ class UserController extends Controller
      */
     public function update(UpdateUser $request, Admin $user)
     {
-        
+
         //$this->authorize('update', $user);
         $user->fill($request->except('password'));
         if ($request->filled('password')) {
