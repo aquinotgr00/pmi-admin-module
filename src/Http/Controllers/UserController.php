@@ -5,6 +5,7 @@ namespace BajakLautMalaka\PmiAdmin\Http\Controllers;
 use BajakLautMalaka\PmiAdmin\Admin;
 use BajakLautMalaka\PmiAdmin\Privilege;
 use BajakLautMalaka\PmiAdmin\Role;
+use BajakLautMalaka\PmiAdmin\AdminPrivilege;
 use BajakLautMalaka\PmiAdmin\Http\Requests\StoreUser;
 use BajakLautMalaka\PmiAdmin\Http\Requests\UpdateUser;
 use BajakLautMalaka\PmiAdmin\Jobs\SendResetPasswordEmailToAdmin;
@@ -73,14 +74,23 @@ class UserController extends Controller
     {
         if ($request->has('privileges')) {
             
+            $user->privileges()->delete(); //drop all privileges
+
             $privileges =  collect($request->privileges);
             $privileges = $privileges->filter(function ($value) {
                 return !is_null($value);
             });
 
-            $privileges = $privileges->toArray();
-            
-            $user->privileges()->createMany($privileges);
+            $privileges = $privileges->map(function($privilege){
+
+                $privilege['admin_id'] = auth()->user()->id;
+                $privilege = new AdminPrivilege($privilege);
+                
+                return $privilege;
+            });
+
+            $user->privileges()->saveMany($privileges); //create new privileges
+
             $user->privileges;            
         }
         return $user;
@@ -95,22 +105,15 @@ class UserController extends Controller
      */
     public function update(UpdateUser $request, Admin $user)
     {
-
-        //$this->authorize('update', $user);
         $user->fill($request->except('password'));
+
         if ($request->filled('password')) {
             $user->password = $request->password;
         }
+
+        $user = $this->handleStorePrivileges($request, $user);
         
         $user->save();
-        /*
-        if (Gate::allows('edit-user-privileges', $user)) {
-            if ($request->has('privilege')) {
-                $user->privileges()->delete();
-                $user->privileges()->createMany($request->privilege);
-            }
-        }
-        */
         return response()->success(compact('user'));
     }
     

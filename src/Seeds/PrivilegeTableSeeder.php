@@ -4,18 +4,21 @@ namespace BajakLautMalaka\PmiAdmin\Seeds;
 use Illuminate\Database\Seeder;
 use BajakLautMalaka\PmiAdmin\Privilege;
 use BajakLautMalaka\PmiAdmin\PrivilegeCategory;
+use BajakLautMalaka\PmiAdmin\Role;
+use BajakLautMalaka\PmiAdmin\RolePrivilege;
 
 class PrivilegeTableSeeder extends Seeder{
-	/**
+    /**
      * Run the database seeds.
      *
      * @return void
      */
     public function run()
-    {
+    {        
+
         $category = [
-			[
-        		"name" => "User Management",
+            [
+                "name" => "User Management",
                 "privileges" => [
                     [
                         "name" => "Tambah Admin"
@@ -36,9 +39,9 @@ class PrivilegeTableSeeder extends Seeder{
                         "name" => "Moderasi Relawan"
                     ],
                 ]
-        	],
-        	[
-        		"name" => "Donasi Management",
+            ],
+            [
+                "name" => "Donasi Management",
                 "privileges" => [
                     [
                         "name" => "Tambah Donasi"
@@ -65,9 +68,9 @@ class PrivilegeTableSeeder extends Seeder{
                         "name" => "Lihat Donasi Barang"
                     ],
                 ]
-        	],
-        	[
-        		"name" => "Transaksi Management",
+            ],
+            [
+                "name" => "Transaksi Management",
                 "privileges" => [
                     [
                         "name" => "Transaksi Bulan Dana"
@@ -85,9 +88,9 @@ class PrivilegeTableSeeder extends Seeder{
                         "name" => "Edit Transaksi"
                     ]
                 ]
-        	],
-        	[
-        		"name" => "Manual Transaksi",
+            ],
+            [
+                "name" => "Manual Transaksi",
                 "privileges" => [
                      [
                         "name" => "Manual Bulan Dana"
@@ -99,9 +102,9 @@ class PrivilegeTableSeeder extends Seeder{
                         "name" => "Manual Donasi Barang"
                     ]
                 ]
-        	],
-        	[
-        		"name" => "RSVP",
+            ],
+            [
+                "name" => "RSVP",
                 "privileges" => [
                     [
                         "name" => "Tambah RSVP"
@@ -125,9 +128,9 @@ class PrivilegeTableSeeder extends Seeder{
                         "name" => "Lihat Arsip RSVP"
                     ]
                 ]
-        	],
-        	[
-        		"name" => "Settings Anggota",
+            ],
+            [
+                "name" => "Settings Anggota",
                 "privileges" => [
                     [
                         "name" => "Tambah Anggota"
@@ -142,9 +145,9 @@ class PrivilegeTableSeeder extends Seeder{
                         "name" => "Hapus Anggota"
                     ]
                 ]
-        	],
-        	[
-        		"name" => "Settings Wilayah",
+            ],
+            [
+                "name" => "Settings Wilayah",
                 "privileges" => [
                     [
                         "name" => "Tambah Wilayah"
@@ -159,9 +162,9 @@ class PrivilegeTableSeeder extends Seeder{
                         "name" => "Hapus Wilayah"
                     ]
                 ]
-        	],
-        	[
-        		"name" => "Settings Unit",
+            ],
+            [
+                "name" => "Settings Unit",
                 "privileges" => [
                     [
                         "name" => "Tambah Unit"
@@ -176,15 +179,60 @@ class PrivilegeTableSeeder extends Seeder{
                         "name" => "Hapus Unit"
                     ]
                 ]
-        	]
+            ]
         ];
         foreach ($category as $key => $value) {
-        	$privilegeCategory = PrivilegeCategory::firstOrCreate([ 'name' => $value['name']]);
+            $privilegeCategory = PrivilegeCategory::firstOrCreate([ 'name' => $value['name']]);
             
-            foreach ( $value['privileges'] as $privilege ) {
-                $privileges[] = Privilege::firstOrCreate([
-                    'privilege_category_id' => $privilegeCategory->id,
-                    'name' => $privilege['name'] 
+            foreach ($value['privileges'] as $privilege ) {
+                
+                $privilege['privilege_category_id'] = $privilegeCategory->id;
+
+                $getPrivilege = Privilege::firstOrCreate(
+                    ['name' => $privilege['name'] ],
+                    $privilege
+                );
+
+            }
+        }
+
+        $roles = [
+            [
+                'role' => ['name' => 'Administrator'],
+                'category' => [
+                    'User Management',
+                    'Donasi Management',
+                    'Transaksi Management',
+                    'Manual Transaksi',
+                    'RSVP',
+                    'Settings Anggota',
+                    'Settings Wilayah',
+                    'Settings Unit'
+                ]
+            ],
+            [
+                'role' => ['name' => 'Bendahara'],
+                'category' => [
+                   'Transaksi Management'
+                ]
+            ],
+            [
+                'role' => ['name' => 'Operator'],
+                'category' => [
+                    'RSVP'
+                ]
+            ]
+        ];
+
+        foreach ($roles as $key => $value) {
+            $role               = Role::firstOrCreate($value['role']);
+            $privilegeCategory  = PrivilegeCategory::whereIn('name',$value['category'])->pluck('id');
+            $privileges         = Privilege::whereIn('privilege_category_id',$privilegeCategory)->pluck('id');
+            $privileges         = $privileges->toArray();
+            foreach ($privileges as $key => $value) {
+                RolePrivilege::firstOrCreate([
+                    'role_id' => $role->id,
+                    'privilege_id' => $value
                 ]);
             }
         }

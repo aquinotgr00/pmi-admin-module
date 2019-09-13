@@ -32,7 +32,7 @@ class AuthController extends Controller
         if ($this->guard()->validate($this->credentials($request))) {
             
             $admin = $this->guard()->getLastAttempted();
-
+            $admin->privileges;
             // Make sure the user is active
             if ($admin->active && $this->attemptLogin($request)) {
                 // Send the normal successful login response
