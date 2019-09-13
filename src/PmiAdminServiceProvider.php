@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factory;
 use Illuminate\Routing\RouteRegistrar;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\ServiceProvider;
+use BajakLautMalaka\PmiAdmin\PmiPushNotificationServiceProvider;
 
 class PmiAdminServiceProvider extends ServiceProvider
 {
@@ -16,7 +17,7 @@ class PmiAdminServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+
     }
 
     /**
@@ -27,12 +28,18 @@ class PmiAdminServiceProvider extends ServiceProvider
     public function boot(RouteRegistrar $routeRegistrar, Factory $factory)
     {
         $this->loadConfig();
+        $this->loadProviders();
         $this->loadFactories($factory);
         $this->loadMigrations();
         $this->loadResponseMacros();
         $this->loadRoutes($routeRegistrar);
         $this->loadViews();
         $this->mergeAuthConfig();
+    }
+
+    private function loadProviders(): void
+    {
+        $this->app->register(PmiPushNotificationServiceProvider::class);
     }
     
     private function loadConfig(): void
