@@ -30,9 +30,12 @@ class AuthController extends Controller
         }
 
         if ($this->guard()->validate($this->credentials($request))) {
-            
+            //show privilege name
             $admin = $this->guard()->getLastAttempted();
-            $admin->privileges;
+            foreach ($admin->privileges as $key => $value) {
+                $value->privilege->name;
+            }
+
             // Make sure the user is active
             if ($admin->active && $this->attemptLogin($request)) {
                 // Send the normal successful login response
