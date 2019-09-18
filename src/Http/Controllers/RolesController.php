@@ -26,6 +26,7 @@ class RolesController extends Controller{
 
 	public function show(Role $role)
 	{
+		$role->load('privileges');
 		return response()->success($role);
 	}
 

@@ -76,16 +76,14 @@ class UserController extends Controller
             
             $user->privileges()->delete(); //drop all privileges
 
-            $privileges =  collect($request->privileges);
-            $privileges = $privileges->filter(function ($value) {
-                return !is_null($value);
-            });
+            $privileges = collect($request->privileges);
+            $privileges = $privileges->filter(function ($privilege)  {
+                    return ($privilege['privilege_id']);
+            })->all();
 
-            $privileges = $privileges->map(function($privilege){
-
+            $privileges = collect($privileges)->map(function($privilege){
                 $privilege['admin_id'] = auth()->user()->id;
                 $privilege = new AdminPrivilege($privilege);
-                
                 return $privilege;
             });
 
