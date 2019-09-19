@@ -29,8 +29,7 @@ class PrivilegeController extends Controller{
 
 	public function show(Privilege $privilege)
 	{
-		$privilege->load('privilegeCategory');
-		return response()->success($privilege);
+		return response()->success($privilege->load('privilegeCategory'));
 	}
 
 	public function store(StorePrivilege $request)

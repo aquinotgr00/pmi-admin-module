@@ -119,17 +119,13 @@ class PrivilegeTableSeeder extends Seeder{
 
     private function definePrivilegesForRole(string $roleName, array $privileges): void
     {
-        $timestamp          = $this->getTimestamp();
-        $role_id            = $this->createRole($roleName);
-        $privilegeCategory  = PrivilegeCategory::whereIn('name',$privileges)->pluck('id');
-        $privileges         = Privilege::whereIn('privilege_category_id',$privilegeCategory)->pluck('id');
-        $privileges         = $privileges->toArray();
-        foreach ($privileges as $key => $value) {
-            RolePrivilege::firstOrCreate([
-                'role_id' => $role_id,
-                'privilege_id' => $value
-            ]);
-        }
+        $privilegeCategory  = PrivilegeCategory::whereIn('name',$privileges)->get();
+        $privileges         = $privilegeCategory->load('privileges')->map(function($item,$index){
+            return ['privilege_id' => $item['id']];
+        });
+        $role               = $this->createRole($roleName);
+        $role->privileges()->createMany($privileges->toArray());
+
     }
     
     private function getTimestamp(): array
@@ -147,13 +143,13 @@ class PrivilegeTableSeeder extends Seeder{
         return (isset($privilegeCategory->id))? $privilegeCategory->id : NULL;
     }
 
-    private function createRole(string $roleName): int
+    private function createRole(string $roleName)
     {
         $data = array_merge(['name'=>$roleName], $this->getTimestamp());
         $role = Role::firstOrCreate(
             ['name'=>$roleName],
             $data
         );
-        return (isset($role->id))? $role->id : NULL;
+        return $role;
     }
 }

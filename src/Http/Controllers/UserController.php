@@ -72,24 +72,21 @@ class UserController extends Controller
 
     private function handleStorePrivileges(Request $request, $user)
     {
-        if ($request->has('privileges')) {
+        if ($request->has('privileges')) {            
+            $data = [];
             
-            $user->privileges()->delete(); //drop all privileges
-
-            $privileges = collect($request->privileges);
-            $privileges = $privileges->filter(function ($privilege)  {
-                    return ($privilege['privilege_id']);
-            })->all();
-
-            $privileges = collect($privileges)->map(function($privilege){
-                $privilege['admin_id'] = auth()->user()->id;
-                $privilege = new AdminPrivilege($privilege);
-                return $privilege;
+            $privileges = collect($request->privileges)->pluck('privilege_id')->filter(function($privilege){
+                return (!is_null($privilege) && $privilege > 0);
             });
 
-            $user->privileges()->saveMany($privileges); //create new privileges
+            $privileges = $privileges->map(function($privilege){
+                $admin = new AdminPrivilege(['privilege_id' =>  $privilege]);
+                return $admin;
+            });
 
-            $user->privileges;            
+            $user->privileges()->delete();
+            
+            $user->privileges()->saveMany($privileges);             
         }
         return $user;
     }
@@ -103,7 +100,7 @@ class UserController extends Controller
      */
     public function update(UpdateUser $request, Admin $user)
     {
-        $user->fill($request->except('password'));
+        $user->fill($request->except('password','role_id'));
 
         if ($request->filled('password')) {
             $user->password = $request->password;
