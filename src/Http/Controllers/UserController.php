@@ -5,6 +5,7 @@ namespace BajakLautMalaka\PmiAdmin\Http\Controllers;
 use BajakLautMalaka\PmiAdmin\Admin;
 use BajakLautMalaka\PmiAdmin\Privilege;
 use BajakLautMalaka\PmiAdmin\Role;
+use BajakLautMalaka\PmiAdmin\AdminPrivilege;
 use BajakLautMalaka\PmiAdmin\Http\Requests\StoreUser;
 use BajakLautMalaka\PmiAdmin\Http\Requests\UpdateUser;
 use BajakLautMalaka\PmiAdmin\Jobs\SendResetPasswordEmailToAdmin;
@@ -71,17 +72,21 @@ class UserController extends Controller
 
     private function handleStorePrivileges(Request $request, $user)
     {
-        if ($request->has('privileges')) {
+        if ($request->has('privileges')) {            
+            $data = [];
             
-            $privileges =  collect($request->privileges);
-            $privileges = $privileges->filter(function ($value) {
-                return !is_null($value);
+            $privileges = collect($request->privileges)->pluck('privilege_id')->filter(function($privilege){
+                return (!is_null($privilege) && $privilege > 0);
             });
 
-            $privileges = $privileges->toArray();
+            $privileges = $privileges->map(function($privilege){
+                $admin = new AdminPrivilege(['privilege_id' =>  $privilege]);
+                return $admin;
+            });
+
+            $user->privileges()->delete();
             
-            $user->privileges()->createMany($privileges);
-            $user->privileges;            
+            $user->privileges()->saveMany($privileges);             
         }
         return $user;
     }
@@ -95,22 +100,15 @@ class UserController extends Controller
      */
     public function update(UpdateUser $request, Admin $user)
     {
+        $user->fill($request->except('password','role_id'));
 
-        //$this->authorize('update', $user);
-        $user->fill($request->except('password'));
         if ($request->filled('password')) {
             $user->password = $request->password;
         }
+
+        $user = $this->handleStorePrivileges($request, $user);
         
         $user->save();
-        /*
-        if (Gate::allows('edit-user-privileges', $user)) {
-            if ($request->has('privilege')) {
-                $user->privileges()->delete();
-                $user->privileges()->createMany($request->privilege);
-            }
-        }
-        */
         return response()->success(compact('user'));
     }
     

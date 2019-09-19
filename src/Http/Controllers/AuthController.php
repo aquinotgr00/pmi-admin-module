@@ -30,7 +30,7 @@ class AuthController extends Controller
         }
 
         if ($this->guard()->validate($this->credentials($request))) {
-            
+            //show privilege name
             $admin = $this->guard()->getLastAttempted();
 
             // Make sure the user is active
@@ -39,7 +39,7 @@ class AuthController extends Controller
                 Auth::logout();
                 return response()->success([
                     'token'=>$admin->createToken('PMI')->accessToken,
-                    'profile'=> $admin
+                    'profile'=> $admin->load('privileges')
                 ]);
             }
             

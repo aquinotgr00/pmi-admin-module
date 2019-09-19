@@ -26,7 +26,7 @@ class RolesController extends Controller{
 
 	public function show(Role $role)
 	{
-		return response()->success($role);
+		return response()->success($role->load('privileges'));
 	}
 
 	public function store(Request $request,Role $role)
