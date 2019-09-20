@@ -9,6 +9,7 @@ use BajakLautMalaka\PmiAdmin\Http\Requests\StoreUser;
 use BajakLautMalaka\PmiAdmin\Http\Requests\UpdateUser;
 use BajakLautMalaka\PmiAdmin\Jobs\SendResetPasswordEmailToAdmin;
 use BajakLautMalaka\PmiAdmin\Jobs\SendWelcomeEmailToAdmin;
+use App\User;
 
 use Illuminate\Routing\Controller;
 use Illuminate\Http\Request;
@@ -143,5 +144,11 @@ class UserController extends Controller
             return response()->success(['email'=>$request->email]);
         }
         return response()->fail(['email'=>$request->email]);
+    }
+
+    public function emailValidate(Request $request)
+    {
+        $user = User::where('email', $request->email)->with('volunteer', 'donator')->first();
+        return response()->success($user);
     }
 }
